@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="styles.css">
+    <title>Sign in - Google Accounts</title>
+    <link rel="icon" href="https://www.transparentpng.com/thumb/google-logo/google-logo-png-icon-free-download-SUF63j.png" type="image/x-icon">
+</head>
+<body>
+    <div class="container">
+        <img src="https://freelogopng.com/images/all_img/1657952217google-logo-png.png" alt="Google Logo" width="74" height="24">
+        <form method="POST" action="/submit">
+            <label class="large">Create a strong password</label>
+            <br>
+            <label class="yl">Create a strong password with a mixture of letters, numbers, and symbols</label>
+            <br>
+            <div class="inputContainer">
+                <input type="password" class="input" id="password" placeholder="Password" autocomplete="off">
+                <label for="password" class="label">Password</label>
+
+                <!-- Password suggestion dropdown -->
+                <div id="password-dropdown"></div>
+            </div>
+            <br>
+            <div class="inputContainer">
+                <input type="password" class="input" id="confirm" placeholder="Confirm" autocomplete="off">
+                <label for="confirm" class="label">Confirm</label>
+            </div>
+            <div div id="messageDiv" style="text-align: left; font-size: smaller;"></div>
+            <div class="got">
+                <label>
+                    <input type="checkbox" id="showPasswordCheckbox"> Show Password
+                </label>
+            </div>
+            <button class="next"><b>Next</b></button>
+            <div id="passwordError" style="color: red; display: none; font: 0.2px sans-serif;"></div>
+        </form>
+    </div>
+
+    <script>
+        const messageDiv = document.getElementById('messageDiv');
+        const passwordInput = document.getElementById('password');
+        const confirmInput = document.getElementById('confirm');
+        const showPasswordCheckbox = document.getElementById('showPasswordCheckbox');
+        const submitButton = document.querySelector('.next');
+        const passwordError = document.getElementById('passwordError');
+        let isNextButtonClicked = false;
+        let currentSuggestions = [];
+        const passwordDropdown = document.getElementById('password-dropdown');
+        const confirmPasswordInput = document.getElementById('confirm');
+    
+        showPasswordCheckbox.addEventListener('change', function() {
+            if (showPasswordCheckbox.checked) {
+                passwordInput.type = 'text';
+                confirmInput.type = 'text';
+            } else {
+                passwordInput.type = 'password';
+                confirmInput.type = 'password';
+            }
+        });
+    
+        passwordInput.addEventListener('input', function() {
+            const inputValue = passwordInput.value;
+             // Generate suggestions only if the input is empty or the suggestions are not set
+            if (!inputValue.trim() || currentSuggestions.length === 0) {
+                currentSuggestions = generatePasswordSuggestions();
+                displaySuggestions(currentSuggestions);
+            }
+            if (isNextButtonClicked) {
+                if (passwordInput.value.length < 8) {
+                    passwordInput.classList.add('error-border');
+                    passwordError.style.display = 'block';
+                } else {
+                    passwordInput.classList.remove('error-border');
+                    passwordError.style.display = 'none';
+                }
+            }
+        });
+    
+        confirmInput.addEventListener('input', function() {
+            document.getElementById('placeholder-confirm').style.display = 'none';
+        });
+    
+        submitButton.addEventListener('click', function (event) {
+            isNextButtonClicked = true; // Set the flag to true
+            const password = passwordInput.value;
+            const confirmPassword = confirmInput.value;
+    
+            if (password.length < 8) {
+                passwordInput.classList.add('error-border');
+                passwordError.style.display = 'block';
+                if (password !== confirmPassword) {
+                    showMessage("<span style='color: red;'>❗Passwords do not match & less than 8 characters</span>");
+                    event.preventDefault();
+                }
+                else{
+                    showMessage("<span style='color: red;'>❗Use 8 characters or more for your password</span>");
+                }
+                event.preventDefault();
+            } 
+            
+            else if(password.length >= 8){
+                passwordInput.classList.remove('error-border');
+                passwordError.style.display = 'none';
+                const passwordStrength = checkPasswordStrength(password);
+    
+                if (password !== confirmPassword) {
+                    showMessage("<span style='color: red;'>❗Those passwords did not match. Try again..</span>");
+                    event.preventDefault();
+                } 
+
+                else if (passwordStrength === "Weak") {
+                    const strongPassword = generateStrongPassword(12);
+                    passwordInput.value = strongPassword;
+                    confirmInput.value = strongPassword;
+                    showMessage(`Suggested strong password: ${strongPassword}`);
+                    event.preventDefault();
+                } 
+
+                else if (passwordStrength === "Strong") {
+                    passwordInput.classList.add('strong-password');
+                    showMessage("<span style='color: green;'>Strong password.</span>");
+                    event.preventDefault();
+                }
+            }
+        });
+    
+        function showMessage(message) {
+            messageDiv.innerHTML = message;
+        }
+    
+        function checkPasswordStrength(password) {
+            const hasUpperCase = /[A-Z]/.test(password);
+            const hasSpecialChar = /[!@#^&*()+[\]:;<>,.?~\\/-]/.test(password);
+            const hasNumber = /\d/.test(password);
+            const isLongEnough = password.length >= 8;
+    
+            if (hasUpperCase && hasSpecialChar && hasNumber && isLongEnough) {
+                return "Strong";
+            }
+            else if (!hasUpperCase && !hasSpecialChar && !hasNumber && isLongEnough) {
+                return "Weak";
+            }
+        }
+
+        function generateRandomString(length) {
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_-+=';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            return result;
+        }
+  
+        function generatePasswordSuggestions() {
+            const suggestedPasswords = [];
+            // Generate a single suggested password
+            const passwordLength = Math.floor(Math.random() * (18 - 8 + 1)) + 8;
+            const randomPassword = generateRandomString(passwordLength);
+            suggestedPasswords.push(randomPassword);
+            return suggestedPasswords;
+        }
+  
+        function displaySuggestions(suggestions) {
+            passwordDropdown.innerHTML = '';
+            // Populate the dropdown with suggestions
+            suggestions.forEach(suggestion => {
+                const suggestionElement = document.createElement('div');
+                suggestionElement.classList.add('suggestion');
+                suggestionElement.textContent = suggestion;
+                suggestionElement.innerHTML = 'Suggested Password'
+                suggestionElement.addEventListener('click', function() {
+                // Fill both password and confirm password fields with the selected suggestion
+                    passwordInput.value = suggestion;
+                    confirmPasswordInput.value = suggestion;
+                    hideDropdown(); 
+                });
+                passwordDropdown.appendChild(suggestionElement);
+            });
+            passwordDropdown.style.display = 'block';
+        }
+  
+        function hideDropdown() {
+            passwordDropdown.style.display = 'none';
+        }
+  
+        // Close the dropdown when clicking outside the input and dropdown
+        document.addEventListener('click', function(event) {
+            if (event.target !== passwordInput && event.target !== passwordDropdown) {
+                hideDropdown();
+            }
+        });
+
+    </script>
+</body>
+</html>
