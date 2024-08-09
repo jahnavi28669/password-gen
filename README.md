@@ -6,10 +6,7 @@ This repository contains the HTML, CSS, and JavaScript code for a Google Account
 - [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
-- [File Structure](#file-structure)
-- [Contributing](#contributing)
-- [License](#license)
-
+-
 ## Features
 
 - **Password Strength Validation**: Ensures passwords are at least 8 characters long and includes a mixture of letters, numbers, and symbols.
@@ -42,45 +39,3 @@ To use the password creation form, open the `index.html` file in your web browse
 3. Use the "Show Password" checkbox to toggle the visibility of the passwords.
 4. Click the "Next" button to validate and get suggestions if needed.
 
-## File Structure
-
-```
-google-account-password-page/
-├── index.html
-├── styles.css
-└── README.md
-```
-
-- `index.html`: Contains the HTML structure for the password creation page.
-- `styles.css`: Contains the CSS styles for the password creation page.
-- `README.md`: The readme file for the project.
-
-## Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository.
-2. Create a new branch:
-
-    ```bash
-    git checkout -b feature/your-feature-name
-    ```
-
-3. Make your changes.
-4. Commit your changes:
-
-    ```bash
-    git commit -m 'Add some feature'
-    ```
-
-5. Push to the branch:
-
-    ```bash
-    git push origin feature/your-feature-name
-    ```
-
-6. Open a pull request.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
